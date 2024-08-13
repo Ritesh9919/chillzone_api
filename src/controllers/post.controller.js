@@ -1,3 +1,4 @@
+
 import { Comment } from '../models/comment.model.js';
 import { Like } from '../models/like.model.js';
 import {Post} from '../models/post.model.js'
@@ -38,6 +39,22 @@ export const createPost = async(req, res, next)=> {
     }
 }
 
+export const getAllPostForHomePage = async(req, res, next) => {
+    try {
+        const posts = await Post.find({}).populate({
+            path:"postBy",
+            select:"name avatar",
+        })
+
+        if(!posts) {
+            return next(new ApiError("posts not found", 404));
+        }
+        return res.status(200).json(new ApiResponse(true, "posts fetched successfully", posts));
+    } catch (error) {
+        console.error("error in postController getAllPostForHomePage api", error.message);
+        next(error);
+    }
+}
 
 export const getPostById = async(req, res, next)=> {
     try {

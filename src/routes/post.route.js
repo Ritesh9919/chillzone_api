@@ -5,11 +5,12 @@ import {
     getPostById,
     getAllPostByUser,
     deletePostById,
-    updatePostById
+    updatePostById,
+    getAllPostForHomePage
 } from '../controllers/post.controller.js';
 import {upload} from '../middlewares/multer.middleware.js'
 import {verifyJWT} from '../middlewares/auth.middleware.js'
-
+router.get('/all', getAllPostForHomePage);
 router.post('/', verifyJWT, upload.single('postUrl'), createPost);
 router.get('/', verifyJWT, getAllPostByUser);
 router.get('/', verifyJWT, getPostById);

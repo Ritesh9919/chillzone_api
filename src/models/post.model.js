@@ -15,7 +15,7 @@ const postSchema = new mongoose.Schema({
    },
    postBy:{
     type:mongoose.Types.ObjectId,
-    ref:"Post"
+    ref:"User"
    }
 },{timestamps:true});
 
