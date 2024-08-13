@@ -35,3 +35,76 @@ export const createPost = async(req, res, next)=> {
         next(error);
     }
 }
+
+
+export const getPostById = async(req, res, next)=> {
+    try {
+        const {postId} = req.query;
+        const post = await Post.findById(postId);
+        if(!post) {
+            return next(new ApiError("post not found", 404));
+        }
+        return res.status(200).json(new ApiResponse(true, "post fetched successfully", post));
+    } catch (error) {
+        console.error("error in postController getPostById api", error.message);
+        next(error);
+    }
+}
+
+export const getAllPostByUser = async(req, res, next)=> {
+    try {
+        const posts = await Post.find({postBy:req.user._id});
+        if(!posts) {
+            return next(new ApiError("posts not found", 404));
+        }
+        return res.status(200).json(new ApiResponse(true, "posts fetched successfully", posts));
+    } catch (error) {
+        console.error("error in postController getAllPostByUser api", error.message);
+        next(error);
+    }
+}
+
+export const deletePostById = async(req, res, next)=> {
+    try {
+        const {postId} = req.query;
+        const post = await Post.findById(postId);
+        if(!post) {
+            return next(new ApiError("post not found", 404));
+        }
+        if(!req.user._id.equals(post.postBy)) {
+            return next(new ApiError("you can not delete this post", 401));
+        }
+
+        await Post.findByIdAndDelete(postId);
+
+        return res.status(200).json(new ApiResponse(true, "post deleted successfully"));
+
+    } catch (error) {
+        console.error("error in postController deletePostById api", error);
+        next(error);
+    }
+}
+
+export const updatePostById = async(req, res, next)=> {
+    try {
+        const {postId} = req.query;
+        const {title, content} = req.body;
+        if(!title || !content) {
+            return next(new ApiError("title and content is required", 400));
+        }
+        const post = await Post.findById(postId);
+        if(!post) {
+            return next(new ApiError("post not found", 404));
+        }
+        if(!req.user._id.equals(post.postBy)) {
+            return next(new ApiError("you can not update this post", 401));
+        }
+
+        const updatedPost = await Post.findByIdAndUpdate(postId, {$set:{title, content}},{new:true});
+
+        return res.status(200).json(new ApiResponse(true, "post updated successfully", updatedPost));
+    } catch (error) {
+        console.error("error in postController updatePostById api", error);
+        next(error);
+    }
+}
