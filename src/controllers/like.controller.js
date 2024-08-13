@@ -55,3 +55,21 @@ export const toggleCommentLike = async(req, res, next)=> {
         next(error);
     }
 }
+
+export const getLikesOnPost = async(req, res, next)=> {
+    try {
+        const {postId} = req.query;
+        const [likes, total] = await Promise.all([
+            Like.find({post:postId}).populate({
+                path:'likedBy',
+                select:"name"
+            }),
+            Like.countDocuments({post:postId})
+        ])
+
+        return res.status(200).json(new ApiResponse(true, "likes fetched succesfully", {likes, total}))
+    } catch (error) {
+        console.error("error in likeController getLikesOnPost api", error.message);
+        next(error);
+    }
+}

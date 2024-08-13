@@ -1,4 +1,5 @@
 import { Comment } from '../models/comment.model.js';
+import { Like } from '../models/like.model.js';
 import {Post} from '../models/post.model.js'
 import {ApiError} from '../utils/ApiError.js';
 import {ApiResponse} from '../utils/ApiResponse.js';
@@ -78,6 +79,7 @@ export const deletePostById = async(req, res, next)=> {
 
         await Post.findByIdAndDelete(postId);
         await Comment.deleteMany({post:postId});
+        await Like.deleteMany({post:postId});
 
         return res.status(200).json(new ApiResponse(true, "post deleted successfully"));
 

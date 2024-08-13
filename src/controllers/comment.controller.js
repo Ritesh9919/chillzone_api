@@ -2,6 +2,7 @@ import {ApiError} from '../utils/ApiError.js';
 import {ApiResponse} from '../utils/ApiResponse.js';
 import {Comment} from '../models/comment.model.js'
 import { Post } from '../models/post.model.js';
+import { Like } from '../models/like.model.js';
 
 
 export const createComment = async(req, res, next)=> {
@@ -60,6 +61,7 @@ export const deleteCommentById = async(req, res, next)=> {
         }
 
         await Comment.findByIdAndDelete(commentId);
+        await Like.deleteMany({comment:commentId});
         return res.status(200).json(new ApiResponse(true, "comment deleted successfully"));
     } catch (error) {
         console.error("error in commentController getCommentById api", error.message);
